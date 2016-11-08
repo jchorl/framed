@@ -1,0 +1,4 @@
+followed 3 steps to create a service account here: https://developers.google.com/identity/protocols/OAuth2ServiceAccount
+obtained a json that has a key pair
+mvd that file to the project root and renamed creds.json
+logged into google admin console and delegated authority using the service account's client ID and picassa scope: https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority
