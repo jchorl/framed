@@ -23,9 +23,8 @@ ui-dev:
 		--name uibuild \
 		-p 3000:3000 \
 		-v $(PWD)/ui:/ui \
-		--link framed:framed \
 		-w /ui \
 		node \
-		npm start
+		bash
 
 .PHONY: run build ui ui-dev
