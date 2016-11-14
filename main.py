@@ -90,6 +90,7 @@ class Links(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.write(json.dumps({
             'link': get_full_photo_link(link),
+            'albumId': link.album_id,
             'state': STATE_COMPLETE
         }))
 
@@ -196,6 +197,7 @@ class StateRouter(webapp2.RequestHandler):
             resp['state'] = STATE_COMPLETE
             resp['link'] = get_full_photo_link(link)
             resp['albums'] = albums
+            resp['albumId'] = link.album_id
 
         return write_json(self.response, resp)
 

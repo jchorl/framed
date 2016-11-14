@@ -18,8 +18,8 @@ export default class GettingStarted extends Component {
       });
   }
 
-  selectAlbum = (e) => {
-    let albumId = e.target.options[e.target.selectedIndex].value
+  selectAlbum = (event) => {
+    let albumId = event.target.value;
     let headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
@@ -32,7 +32,7 @@ export default class GettingStarted extends Component {
       })
     }).then(resp => resp.json())
       .then(json => {
-        this.setState(json);
+        this.setState(Object.assign(json, {albumId}));
       })
   }
 
@@ -42,9 +42,6 @@ export default class GettingStarted extends Component {
     fetch('/api/auth/begin', {headers: headers}).then(resp => resp.text()).then(text => window.location = text)
   }
 
-  // TODO if logged in, dont show 1, shift everything back
-  // TODO populate albums for 2
-  // TODO generate nice embeddable code
   render() {
     return (
       <div className="getting-started">
@@ -55,7 +52,7 @@ export default class GettingStarted extends Component {
         <div>
           2. Select an album to use {
             this.state.loaded && this.state.state !== 'UNAUTHD'
-              ? (<select value={this.state.album_name} onChange={this.selectAlbum}>
+              ? (<select value={this.state.albumId} onChange={this.selectAlbum}>
                 {this.state.albums.map(album => (<option key={album.id} value={album.id}>{album.title}</option>))}
                 </select>)
               : null
