@@ -53,7 +53,7 @@ export default class GettingStarted extends Component {
       credentials: 'include'
     }).then(resp => resp.json())
       .then(json => {
-        this.setState(Object.assign({albumId: ''}, json));
+        this.setState(Object.assign({albumId: '', link: '<COMPLETE_STEPS_1_AND_2>'}, json));
       })
   }
 
