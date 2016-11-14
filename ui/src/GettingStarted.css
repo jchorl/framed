@@ -17,7 +17,8 @@
   font-family: inherit;
   font-size: 16px;
   margin-left: 15px;
-  border: 1px solid #000;
+  border: 2px solid #461f00;
+  color: #461f00;
   background-color: transparent;
   cursor: pointer;
   padding: 10px 15px;
@@ -29,12 +30,16 @@
 }
 
 .getting-started .grant-button:hover {
-  background-color: #66ee78;
+  background-color: #461f00;
+  color: #fdf6e3;
   transition: background-color 100ms linear;
 }
 
 .getting-started .snippets {
   font-size: 14px;
-  display: flex;
-  justify-content: space-around;
+}
+
+.getting-started .snippets .snippet {
+  font-size: 14px;
+  margin: 15px 0;
 }

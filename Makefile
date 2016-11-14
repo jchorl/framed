@@ -5,7 +5,7 @@ run:
 		-v $(PWD):/framed \
 		-w /framed \
 		jchorl/framed \
-		dev_appserver.py --host=0.0.0.0 .
+		dev_appserver.py --host=0.0.0.0 --threadsafe_override=false .
 
 build:
 	docker build -f Dockerfile. -t jchorl/framed .

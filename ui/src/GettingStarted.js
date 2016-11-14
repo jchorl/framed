@@ -6,7 +6,7 @@ import './GettingStarted.css';
 export default class GettingStarted extends Component {
   constructor(props) {
     super(props);
-    this.state = {loaded: false}
+    this.state = {loaded: false, link: '<COMPLETE_STEPS_1_AND_2>'}
   }
 
   componentDidMount() {
@@ -19,6 +19,7 @@ export default class GettingStarted extends Component {
           loaded: true
         }, json);
         this.setState(newState);
+        this.props.setLoaded();
       });
   }
 
@@ -54,35 +55,53 @@ export default class GettingStarted extends Component {
   isComplete = () => this.state.state === 'COMPLETE'
 
   render() {
-    return this.state.loaded ? (
+    return (
       <div className="getting-started">
         <h2>Getting Started</h2>
-        <div className="step">
-          <span className={ this.isAuthd() ? 'complete' : '' }>1. Let Framed access your Google Photos</span>{ this.isAuthd() ? null : <span>: <button className="grant-button" onClick={this.grantAccess}>Grant Access</button></span> }
-        </div>
-        <div className="step">
-          <span className={ this.isComplete() ? 'complete' : '' }>2. Select an album to use </span>{
-            this.state.loaded && this.state.state !== 'UNAUTHD'
-              ? (<select value={this.state.albumId} onChange={this.selectAlbum}>
-                {this.state.albums.map(album => (<option key={album.id} value={album.id}>{album.title}</option>))}
-              </select>)
-              : null
-          }
-        </div>
-        <div className="step">
-          3. Embed!
-          <div className="snippets">
-            <div>
-              HTML:
-              <pre><code className="html">{ `<img id="framed" src="SOURCE" />` }</code></pre>
+        { this.state.loaded ? (
+          <div>
+            <div className="step">
+              <span className={ this.isAuthd() ? 'complete' : '' }><h3>1. Let Framed access your Google Photos</h3></span>{ this.isAuthd() ? null : <span>: <button className="grant-button" onClick={this.grantAccess}>Grant Access</button></span> }
             </div>
-            <div>
-              Javascript:
-              <pre><code className="html">{ `document.getElementById('framed').src = getNext()` }</code></pre>
+            <div className="step">
+              <span className={ this.isComplete() ? 'complete' : '' }><h3>2. Select an album to use</h3></span>{
+                this.state.loaded && this.state.state !== 'UNAUTHD'
+                  ? (<select value={this.state.albumId} onChange={this.selectAlbum} disabled={this.isComplete()}>
+                    {this.state.albums.map(album => (<option key={album.id} value={album.id}>{album.title}</option>))}
+                  </select>)
+                  : null
+              }
             </div>
-          </div>
+            <div className="step">
+              <h3>3. Embed!</h3>
+              <div className="snippets">
+                <div className="snippet">
+                  HTML:
+                  <pre><code className="html">{ `<img id="framed" src="${this.state.link}" />` }</code></pre>
+                </div>
+                <div className="snippet">
+                  For rotation:
+                  <pre><code className="javascript">{
+`setTimeout(function(){
+   document.getElementById('framed').src = '${this.state.link}?' + new Date().getTime()
+}, 30000, 30000)`
+               }</code></pre>
+         </div>
+         <div className="snippet">
+           For a frame:
+           <pre><code className="css">{
+`#framed {
+  border: 20px solid #461f00;
+  box-sizing: border-box;
+  padding: 10px;
+}`
+              }</code></pre>
         </div>
       </div>
-    ) : null;
+    </div>
+  </div>
+        ) : null }
+      </div>
+    )
   }
 }

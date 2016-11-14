@@ -5,11 +5,12 @@
   font-family: 'Raleway', sans-serif;
   padding: 30px;
   box-sizing: border-box;
-  background-color: #66ee78;
+  background-color: #461f00;
+  color: #fdf6e3;
 }
 
 .title-desc .title {
-  border: 2px solid #000;
+  border: 4px solid #fdf6e3;
   padding: 0 25px;
   box-sizing: border-box;
   margin-bottom: 30px;

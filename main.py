@@ -21,6 +21,15 @@ STATE_NO_ALBUM = 'NO_ALBUM'
 STATE_COMPLETE = 'COMPLETE'
 
 
+def google_request(credentials, url, method='GET', headers={}):
+    http = credentials.authorize(Http())
+    resp, content = http.request(url, method, headers=headers)
+    if resp['status'] == '403':
+        credentials.refresh(http)
+        resp, content = http.request(url, method, headers=headers)
+    return resp, content
+
+
 class Link(ndb.Model):
     credentials = ndb.TextProperty(required=True)
     user_id = ndb.StringProperty(required=True)
@@ -37,8 +46,7 @@ def is_production():
 
 
 def fetch_albums(credentials, user_id):
-    http = credentials.authorize(Http())
-    resp, content = http.request('https://picasaweb.google.com/data/feed/api/user/' + user_id, 'GET', headers={'GData-Version': '2'})
+    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/' + user_id, headers={'GData-Version': '2'})
 
     if resp.status != 200:
         raise Exception('Call to Picasa album list API returned status %d with body %s' % (resp.status, content))
@@ -53,9 +61,8 @@ def get_albums(credentials, user_id):
 
 
 def get_photo_links_from_album(credentials, album_id):
-    http = credentials.authorize(Http())
     # sizing: https://developers.google.com/picasa-web/docs/2.0/reference#Parameters
-    resp, content = http.request('https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '1024u'))
+    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '1024u'))
 
     if resp.status != 200:
         raise Exception('Call to Picasa list in album API returned status %d with body %s' % (resp.status, content))
@@ -95,31 +102,34 @@ class Links(webapp2.RequestHandler):
         }))
 
 
-def get_link_by_id(link_id):
-    query = Link.get_by_id(link_id)
-    return query.fetch()
-
-
 def get_full_photo_link(link):
     return APP_URL + '/api/photo/' + link.key.id()
 
 
+def get_photo(credentials, link):
+    return google_request(credentials, link)
+
+
 class RandomPhoto(webapp2.RequestHandler):
     def get(self, link):
-        full_link = get_link_by_id(link)
-        credentials = full_link.get_credentials()
-        album_id = full_link.album_id(credentials)
+        full_link = Link.get_by_id(link)
+        album_id = full_link.album_id
         if not album_id:
             self.response.write('album_id not found: %s' % album_id)
             return self.response.set_status(404)
 
+        credentials = full_link.get_credentials()
         photo_ids = get_photo_links_from_album(credentials, album_id)
         if not photo_ids:
             self.response.write('no photos found in album: %s' % album_id)
             return self.response.set_status(404)
 
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write(random.choice(photo_ids))
+        resp, content = get_photo(credentials, random.choice(photo_ids))
+        if resp.status != 200:
+            raise Exception('Call to Google photo API returned status %d with body %s' % (resp.status, content))
+        for header in ['expires', 'content-type', 'etag', 'cache-control']:
+            self.response.headers[header] = resp[header]
+        return self.response.write(content)
 
 
 def get_flow():
@@ -203,10 +213,10 @@ class StateRouter(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/api/state', StateRouter),
-    ('/api/links', Links),
-    ('/api/photo/<link>', RandomPhoto),
-    ('/api/auth/begin', BeginAuth),
-    ('/api/auth/complete', AuthComplete),
-    ('/api/reset', Reset),
+    webapp2.Route('/api/state', StateRouter),
+    webapp2.Route('/api/links', Links),
+    webapp2.Route(r'/api/photo/<link>', RandomPhoto),
+    webapp2.Route('/api/auth/begin', BeginAuth),
+    webapp2.Route('/api/auth/complete', AuthComplete),
+    webapp2.Route('/api/reset', Reset),
 ], debug=True)
