@@ -5,6 +5,10 @@
   margin: 0 auto;
 }
 
+.getting-started .complete {
+  text-decoration: line-through;
+}
+
 .getting-started .grant-button {
   font-family: inherit;
   font-size: 16px;

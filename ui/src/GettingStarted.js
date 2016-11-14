@@ -42,19 +42,22 @@ export default class GettingStarted extends Component {
     fetch('/api/auth/begin', {headers: headers}).then(resp => resp.text()).then(text => window.location = text)
   }
 
+  isAuthd = () => this.state.state !== 'UNAUTHD'
+  isComplete = () => this.state.state === 'COMPLETE'
+
   render() {
-    return (
+    return this.state.loaded ? (
       <div className="getting-started">
         <h2>Getting Started</h2>
         <div>
-          1. Let Framed access your Google Photos: <button className="grant-button" onClick={this.grantAccess}>Grant Access</button>
+          <span className={ this.isAuthd() ? 'complete' : '' }>1. Let Framed access your Google Photos</span>{ this.isAuthd() ? null : <span>: <button className="grant-button" onClick={this.grantAccess}>Grant Access</button></span> }
         </div>
         <div>
-          2. Select an album to use {
+          <span className={ this.isComplete() ? 'complete' : '' }>2. Select an album to use </span>{
             this.state.loaded && this.state.state !== 'UNAUTHD'
               ? (<select value={this.state.albumId} onChange={this.selectAlbum}>
                 {this.state.albums.map(album => (<option key={album.id} value={album.id}>{album.title}</option>))}
-                </select>)
+              </select>)
               : null
           }
         </div>
@@ -62,6 +65,6 @@ export default class GettingStarted extends Component {
           3. Embed!
         </div>
       </div>
-    );
+    ) : null;
   }
 }
