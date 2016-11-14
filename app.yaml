@@ -1,0 +1,18 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /favicon.png
+  static_files: ui/build/favicon.png
+  upload: ui/build/favicon.png
+
+- url: /static
+  static_dir: ui/build/static
+
+- url: /api.*
+  script: main.app
+
+- url: /.*
+  static_files: ui/build/index.html
+  upload: ui/build/index.html

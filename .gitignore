@@ -1,1 +1,3 @@
-creds.json
+client_secret.json
+secrets.py
+*.pyc
