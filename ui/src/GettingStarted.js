@@ -45,6 +45,18 @@ export default class GettingStarted extends Component {
       })
   }
 
+  reset = () => {
+    let headers = new Headers();
+    headers.append('Accept', 'application/json');
+    fetch('/api/reset', {
+      headers: headers,
+      credentials: 'include'
+    }).then(resp => resp.json())
+      .then(json => {
+        this.setState(Object.assign({albumId: ''}, json));
+      })
+  }
+
   grantAccess = () => {
     let headers = new Headers();
     headers.append('Accept', 'text/plain');
@@ -99,6 +111,9 @@ export default class GettingStarted extends Component {
         </div>
       </div>
     </div>
+    { this.isComplete()
+        ? <button onClick={this.reset}>Make another!</button>
+        : null }
   </div>
         ) : null }
       </div>

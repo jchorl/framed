@@ -21,15 +21,6 @@ STATE_NO_ALBUM = 'NO_ALBUM'
 STATE_COMPLETE = 'COMPLETE'
 
 
-def google_request(credentials, url, method='GET', headers={}):
-    http = credentials.authorize(Http())
-    resp, content = http.request(url, method, headers=headers)
-    if resp['status'] == '403':
-        credentials.refresh(http)
-        resp, content = http.request(url, method, headers=headers)
-    return resp, content
-
-
 class Link(ndb.Model):
     credentials = ndb.TextProperty(required=True)
     user_id = ndb.StringProperty(required=True)
@@ -43,6 +34,15 @@ class Link(ndb.Model):
 
 def is_production():
     return os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine/')
+
+
+def google_request(credentials, url, method='GET', headers={}):
+    http = credentials.authorize(Http())
+    resp, content = http.request(url, method, headers=headers)
+    if resp['status'] == '403':
+        credentials.refresh(http)
+        resp, content = http.request(url, method, headers=headers)
+    return resp, content
 
 
 def fetch_albums(credentials, user_id):
@@ -87,6 +87,50 @@ def write_json(response, content):
     return response.out.write(json.dumps(content))
 
 
+def get_full_photo_link(link):
+    return APP_URL + '/api/photo/' + link.key.id()
+
+
+def get_photo(credentials, link):
+    return google_request(credentials, link)
+
+
+def get_flow():
+    flow = client.flow_from_clientsecrets(
+        'client_secret.json',
+        scope=GOOGLE_PHOTOS_SCOPES,
+        redirect_uri=APP_URL + '/api/auth/complete'
+    )
+    flow.params['access_type'] = 'offline'
+    flow.params['prompt'] = 'consent'
+    return flow
+
+
+def create_link(credentials):
+    user_id = get_user_id(credentials)
+    link = Link(id=uuid.uuid4().hex[:6], credentials=credentials.to_json(), user_id=user_id)
+    return link.put()
+
+
+def get_user_id(credentials):
+    http = credentials.authorize(Http())
+    resp, content = http.request('https://www.googleapis.com/userinfo/v2/me', 'GET')
+    if resp.status != 200:
+        raise Exception('Call to Google userinfo API returned status %d with body %s' % (resp.status, content))
+
+    parsed = json.loads(content)
+    return parsed['id']
+
+
+def set_link_cookie(response, value):
+    if is_production():
+        response.set_cookie('link', value, path='/',
+                            domain=DOMAIN, secure=True, httponly=True,
+                            max_age=60 * 60 * 24 * 7)
+    else:
+        response.set_cookie('link', value, path='/', secure=False)
+
+
 class Links(webapp2.RequestHandler):
     def put(self):
         link = get_link_from_cookies(self.request.cookies)
@@ -100,14 +144,6 @@ class Links(webapp2.RequestHandler):
             'albumId': link.album_id,
             'state': STATE_COMPLETE
         }))
-
-
-def get_full_photo_link(link):
-    return APP_URL + '/api/photo/' + link.key.id()
-
-
-def get_photo(credentials, link):
-    return google_request(credentials, link)
 
 
 class RandomPhoto(webapp2.RequestHandler):
@@ -132,37 +168,12 @@ class RandomPhoto(webapp2.RequestHandler):
         return self.response.write(content)
 
 
-def get_flow():
-    flow = client.flow_from_clientsecrets(
-        'client_secret.json',
-        scope=GOOGLE_PHOTOS_SCOPES,
-        redirect_uri=APP_URL + '/api/auth/complete')
-    flow.params['access_type'] = 'offline'
-    return flow
-
-
 class BeginAuth(webapp2.RequestHandler):
     def get(self):
         flow = get_flow()
         auth_uri = flow.step1_get_authorize_url()
         self.response.headers['Content-Type'] = 'text/plain'
         return self.response.out.write(str(auth_uri))
-
-
-def create_link(credentials):
-    user_id = get_user_id(credentials)
-    link = Link(id=uuid.uuid4().hex[:6], credentials=credentials.to_json(), user_id=user_id)
-    return link.put()
-
-
-def get_user_id(credentials):
-    http = credentials.authorize(Http())
-    resp, content = http.request('https://www.googleapis.com/userinfo/v2/me', 'GET')
-    if resp.status != 200:
-        raise Exception('Call to Google userinfo API returned status %d with body %s' % (resp.status, content))
-
-    parsed = json.loads(content)
-    return parsed['id']
 
 
 class AuthComplete(webapp2.RequestHandler):
@@ -174,12 +185,7 @@ class AuthComplete(webapp2.RequestHandler):
         credentials = flow.step2_exchange(code)
         key = create_link(credentials)
         encoded = jwt.encode({'link': key.urlsafe()}, secrets.JWT, algorithm='HS256')
-        if is_production():
-            self.response.set_cookie('link', encoded, path='/',
-                                     domain=DOMAIN, secure=True, httponly=True,
-                                     max_age=60 * 60 * 24 * 7)
-        else:
-            self.response.set_cookie('link', encoded, path='/', secure=False)
+        set_link_cookie(self.response, encoded)
         return self.redirect(APP_URL)
 
 
@@ -188,8 +194,13 @@ class Reset(webapp2.RequestHandler):
         link = get_link_from_cookies(self.request.cookies)
         key = create_link(link.get_credentials())
         encoded = jwt.encode({'link': key.urlsafe()}, secrets.JWT, algorithm='HS256')
-        self.response.set_cookie('link', encoded, path='/',
-                                 domain=DOMAIN, secure=True)
+        set_link_cookie(self.response, encoded)
+        albums = get_albums(link.get_credentials(), link.user_id)
+        resp = {
+            'state': STATE_NO_ALBUM,
+            'albums': albums
+        }
+        return write_json(self.response, resp)
 
 
 class StateRouter(webapp2.RequestHandler):

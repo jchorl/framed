@@ -13,7 +13,7 @@
   text-decoration: line-through;
 }
 
-.getting-started .grant-button {
+.getting-started button {
   font-family: inherit;
   font-size: 16px;
   margin-left: 15px;
@@ -25,11 +25,11 @@
   transition: background-color 100ms linear;
 }
 
-.getting-started .grant-button:focus {
+.getting-started button:focus {
   outline: none;
 }
 
-.getting-started .grant-button:hover {
+.getting-started button:hover {
   background-color: #461f00;
   color: #fdf6e3;
   transition: background-color 100ms linear;
