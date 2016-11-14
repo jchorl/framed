@@ -50,6 +50,7 @@
   },
   "proxy": "http://framed:8080",
   "dependencies": {
+    "highlightjs": "^9.8.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   },

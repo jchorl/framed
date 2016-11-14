@@ -5,6 +5,10 @@
   margin: 0 auto;
 }
 
+.getting-started .step {
+  margin: 20px 0;
+}
+
 .getting-started .complete {
   text-decoration: line-through;
 }
@@ -27,4 +31,10 @@
 .getting-started .grant-button:hover {
   background-color: #66ee78;
   transition: background-color 100ms linear;
+}
+
+.getting-started .snippets {
+  font-size: 14px;
+  display: flex;
+  justify-content: space-around;
 }

@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
+import { initHighlighting } from 'highlightjs';
+import 'highlightjs/styles/solarized-light.css';
 import './GettingStarted.css';
 
 export default class GettingStarted extends Component {
   constructor(props) {
     super(props);
-
     this.state = {loaded: false}
+  }
+
+  componentDidMount() {
     fetch('/api/state', {
       credentials: 'include'
     })
@@ -16,6 +20,10 @@ export default class GettingStarted extends Component {
         }, json);
         this.setState(newState);
       });
+  }
+
+  componentDidUpdate() {
+    initHighlighting();
   }
 
   selectAlbum = (event) => {
@@ -49,10 +57,10 @@ export default class GettingStarted extends Component {
     return this.state.loaded ? (
       <div className="getting-started">
         <h2>Getting Started</h2>
-        <div>
+        <div className="step">
           <span className={ this.isAuthd() ? 'complete' : '' }>1. Let Framed access your Google Photos</span>{ this.isAuthd() ? null : <span>: <button className="grant-button" onClick={this.grantAccess}>Grant Access</button></span> }
         </div>
-        <div>
+        <div className="step">
           <span className={ this.isComplete() ? 'complete' : '' }>2. Select an album to use </span>{
             this.state.loaded && this.state.state !== 'UNAUTHD'
               ? (<select value={this.state.albumId} onChange={this.selectAlbum}>
@@ -61,8 +69,18 @@ export default class GettingStarted extends Component {
               : null
           }
         </div>
-        <div>
+        <div className="step">
           3. Embed!
+          <div className="snippets">
+            <div>
+              HTML:
+              <pre><code className="html">{ `<img id="framed" src="SOURCE" />` }</code></pre>
+            </div>
+            <div>
+              Javascript:
+              <pre><code className="html">{ `document.getElementById('framed').src = getNext()` }</code></pre>
+            </div>
+          </div>
         </div>
       </div>
     ) : null;

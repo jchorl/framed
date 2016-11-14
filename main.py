@@ -41,7 +41,7 @@ def fetch_albums(credentials, user_id):
     resp, content = http.request('https://picasaweb.google.com/data/feed/api/user/' + user_id, 'GET', headers={'GData-Version': '2'})
 
     if resp.status != 200:
-        raise 'Call to Picasa album list API returned status %d with body %s' % (resp, content)
+        raise Exception('Call to Picasa album list API returned status %d with body %s' % (resp.status, content))
 
     return content
 
@@ -58,7 +58,7 @@ def get_photo_links_from_album(credentials, album_id):
     resp, content = http.request('https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '1024u'))
 
     if resp.status != 200:
-        raise 'Call to Picasa list in album API returned status %d with body %s' % (resp, content)
+        raise Exception('Call to Picasa list in album API returned status %d with body %s' % (resp.status, content))
 
     parsed = BeautifulSoup(content)
     return [entry.content['src'] for entry in parsed.find_all('entry')]
@@ -149,7 +149,7 @@ def get_user_id(credentials):
     http = credentials.authorize(Http())
     resp, content = http.request('https://www.googleapis.com/userinfo/v2/me', 'GET')
     if resp.status != 200:
-        raise 'Call to Google userinfo API returned status %d with body %s' % (resp, content)
+        raise Exception('Call to Google userinfo API returned status %d with body %s' % (resp.status, content))
 
     parsed = json.loads(content)
     return parsed['id']
