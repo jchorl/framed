@@ -18,8 +18,22 @@ export default class GettingStarted extends Component {
       });
   }
 
-  selectAlbum = () => {
-    debugger;
+  selectAlbum = (e) => {
+    let albumId = e.target.options[e.target.selectedIndex].value
+    let headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+    fetch('/api/links', {
+      headers: headers,
+      credentials: 'include',
+      method: 'PUT',
+      body: JSON.stringify({
+        album_id: albumId
+      })
+    }).then(resp => resp.json())
+      .then(json => {
+        this.setState(json);
+      })
   }
 
   grantAccess = () => {
@@ -42,7 +56,7 @@ export default class GettingStarted extends Component {
           2. Select an album to use {
             this.state.loaded && this.state.state !== 'UNAUTHD'
               ? (<select value={this.state.album_name} onChange={this.selectAlbum}>
-                {this.state.albums.map(album => (<option key={album.id}>{album.title}</option>))}
+                {this.state.albums.map(album => (<option key={album.id} value={album.id}>{album.title}</option>))}
                 </select>)
               : null
           }

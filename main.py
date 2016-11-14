@@ -22,7 +22,6 @@ STATE_COMPLETE = 'STATE_COMPLETE'
 
 
 class Link(ndb.Model):
-    link = ndb.TextProperty(required=True)
     credentials = ndb.TextProperty(required=True)
     user_id = ndb.StringProperty(required=True)
     album_id = ndb.TextProperty()
@@ -83,32 +82,43 @@ def write_json(response, content):
 
 class Links(webapp2.RequestHandler):
     def put(self):
-        pass
+        link = get_link_from_cookies(self.request.cookies)
+        parsed = json.loads(self.request.body)
+        link.album_id = parsed['album_id']
+        link.put()
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.write(json.dumps({
+            'link': get_full_photo_link(link),
+            'state': STATE_COMPLETE
+        }))
+
+
+def get_link_by_id(link_id):
+    query = Link.get_by_id(link_id)
+    return query.fetch()
+
+
+def get_full_photo_link(link):
+    return APP_URL + '/api/photo/' + link.key.id()
 
 
 class RandomPhoto(webapp2.RequestHandler):
-    def get(self):
-        try:
-            link = get_link_from_cookies(self.request.cookies)
-            credentials = link.get_credentials()
-            album_id = link.album_id(credentials)
-            if not album_id:
-                self.response.write('album_id not found: %s' % album_id)
-                self.response.set_status(404)
-                return
+    def get(self, link):
+        full_link = get_link_by_id(link)
+        credentials = full_link.get_credentials()
+        album_id = full_link.album_id(credentials)
+        if not album_id:
+            self.response.write('album_id not found: %s' % album_id)
+            return self.response.set_status(404)
 
-            photo_ids = get_photo_links_from_album(credentials, album_id)
-            if not photo_ids:
-                self.response.write('no photos found in album: %s' % album_id)
-                self.response.set_status(404)
-                return
+        photo_ids = get_photo_links_from_album(credentials, album_id)
+        if not photo_ids:
+            self.response.write('no photos found in album: %s' % album_id)
+            return self.response.set_status(404)
 
-            self.response.headers['Content-Type'] = 'text/plain'
-            self.response.write(random.choice(photo_ids))
-
-        except Exception as e:
-            self.response.write(str(e))
-            self.response.set_status(500)
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.write(random.choice(photo_ids))
 
 
 def get_flow():
@@ -130,7 +140,7 @@ class BeginAuth(webapp2.RequestHandler):
 
 def create_link(credentials):
     user_id = get_user_id(credentials)
-    link = Link(link=uuid.uuid4().hex[:6], credentials=credentials.to_json(), user_id=user_id)
+    link = Link(id=uuid.uuid4().hex[:6], credentials=credentials.to_json(), user_id=user_id)
     return link.put()
 
 
@@ -178,14 +188,13 @@ class StateRouter(webapp2.RequestHandler):
         if not link:
             resp['state'] = STATE_UNAUTHD
         elif not link.album_id:
-            credentials = link.get_credentials()
-            albums = get_albums(credentials, link.user_id)
+            albums = get_albums(link.get_credentials(), link.user_id)
             resp['state'] = STATE_NO_ALBUM
             resp['albums'] = albums
         else:
-            albums = get_albums(credentials, link.user_id)
+            albums = get_albums(link.get_credentials(), link.user_id)
             resp['state'] = STATE_COMPLETE
-            resp['link'] = link.link
+            resp['link'] = get_full_photo_link(link)
             resp['albums'] = albums
 
         return write_json(self.response, resp)
@@ -194,7 +203,7 @@ class StateRouter(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/api/state', StateRouter),
     ('/api/links', Links),
-    ('/api/photo', RandomPhoto),
+    ('/api/photo/<link>', RandomPhoto),
     ('/api/auth/begin', BeginAuth),
     ('/api/auth/complete', AuthComplete),
     ('/api/reset', Reset),
