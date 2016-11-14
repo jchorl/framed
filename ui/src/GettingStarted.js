@@ -24,6 +24,7 @@ export default class GettingStarted extends Component {
   }
 
   componentDidUpdate() {
+    initHighlighting.called = false;
     initHighlighting();
   }
 
