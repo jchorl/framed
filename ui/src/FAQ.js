@@ -8,7 +8,13 @@ export default class FAQ extends Component {
         <h4>Why do you need to grant permissions on your photos AND identity?</h4>
         Framed needs these permissions to list your albums and fetch your photos. You can read the source at <a href="https://github.com/jchorl/framed" target="_blank">github.com/jchorl/framed</a>. If you know of a better way of doing this, please do let me know. Also feel free to host this yourself, and then I get none of your data and it's less load on my servers.
         <h4>How can you host this yourself?</h4>
-        Clone <a href="https://github.com/jchorl/framed" target="_blank">github.com/jchorl/framed</a>. Create a file called <code>secrets.py</code> with <code>JWT = {`<YOUR_JWT_SECRET>`}</code> in the root directory. Change the domain at the top of <code>main.py</code>. Create a project on App Engine and modify <code>app.yaml</code> to point to your own project. Deploy like any other App Engine app.
+        You can host this for free, just like I do.<br/>
+        Clone <a href="https://github.com/jchorl/framed" target="_blank">github.com/jchorl/framed</a>.<br/>
+        Create a file called <code>secrets.py</code> with <code>JWT = {`<YOUR_JWT_SECRET>`}</code> in the root directory.<br/>
+        Change the domain at the top of <code>main.py</code>.<br/>
+        Create a project on App Engine.<br/>
+        Generate an OAuth2 client secret as described <a href="https://developers.google.com/identity/protocols/OAuth2" target="_blank">here</a> and place the json in the project directory called <code>client_secret.json</code>.<br/>
+        Deploy like any other App Engine app.
         <h4>Image sizing?</h4>
         Should be an option soon, depending on server load. See <code>get_photo_links_from_album</code> function in <code>main.py</code>. Then deploy yourself.
       </div>
