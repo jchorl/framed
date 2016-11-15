@@ -62,7 +62,7 @@ def get_albums(credentials, user_id):
 
 def get_photo_links_from_album(credentials, album_id):
     # sizing: https://developers.google.com/picasa-web/docs/2.0/reference#Parameters
-    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '1024u'))
+    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '640u'))
 
     if resp.status != 200:
         raise Exception('Call to Picasa list in album API returned status %d with body %s' % (resp.status, content))

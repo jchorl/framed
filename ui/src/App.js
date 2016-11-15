@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import TitleDesc from './TitleDesc';
 import GettingStarted from './GettingStarted';
 import Example from './Example';
+import FAQ from './FAQ';
+import Contributing from './Contributing';
 import './App.css';
 
 export default class App extends Component {
@@ -21,6 +23,8 @@ export default class App extends Component {
         <TitleDesc />
         <GettingStarted setLoaded={this.setLoaded} />
         <Example loaded={this.state.loaded} />
+        <FAQ />
+        <Contributing />
       </div>
     );
   }

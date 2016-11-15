@@ -1,4 +1,4 @@
-.example {
+.section.example {
   display: block;
   max-width: 768px;
   margin: 0 auto;
@@ -6,7 +6,7 @@
   box-sizing: border-box;
 }
 
-.example #framed {
+.section.example #framed {
   border: 20px solid #461f00;
   box-sizing: border-box;
   padding: 10px;

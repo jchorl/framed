@@ -14,7 +14,7 @@ export default class Example extends Component {
 
   render() {
     return (
-      <div className="example">
+      <div className={`section example`}>
         <h2>Example</h2>
         { this.props.loaded
             ? <img id="framed" alt="random" src={ this.state.link }/>

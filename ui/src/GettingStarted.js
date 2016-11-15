@@ -69,7 +69,7 @@ export default class GettingStarted extends Component {
 
   render() {
     return (
-      <div className="getting-started">
+      <div className={`section getting-started`}>
         <h2>Getting Started</h2>
         { this.state.loaded ? (
           <div>

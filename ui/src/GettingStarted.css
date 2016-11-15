@@ -1,19 +1,12 @@
-.getting-started {
-  padding: 30px 20px;
-  box-sizing: border-box;
-  max-width: 768px;
-  margin: 0 auto;
-}
-
-.getting-started .step {
+.section.getting-started .step {
   margin: 20px 0;
 }
 
-.getting-started .complete {
+.section.getting-started .complete {
   text-decoration: line-through;
 }
 
-.getting-started button {
+.section.getting-started button {
   font-family: inherit;
   font-size: 16px;
   margin-left: 15px;
@@ -25,21 +18,21 @@
   transition: background-color 100ms linear;
 }
 
-.getting-started button:focus {
+.section.getting-started button:focus {
   outline: none;
 }
 
-.getting-started button:hover {
+.section.getting-started button:hover {
   background-color: #461f00;
   color: #fdf6e3;
   transition: background-color 100ms linear;
 }
 
-.getting-started .snippets {
+.section.getting-started .snippets {
   font-size: 14px;
 }
 
-.getting-started .snippets .snippet {
+.section.getting-started .snippets .snippet {
   font-size: 14px;
   margin: 15px 0;
 }

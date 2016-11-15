@@ -12,6 +12,17 @@ h3 {
   font-size: 20px;
 }
 
+a {
+  color: #268bd2;
+}
+
+.section {
+  padding: 30px 20px;
+  box-sizing: border-box;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
 .loader-container {
   min-height: 55px;
 }
