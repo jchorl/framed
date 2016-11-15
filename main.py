@@ -163,7 +163,7 @@ class RandomPhoto(webapp2.RequestHandler):
             self.response.write('no photos found in album: %s' % album_id)
             return self.response.set_status(404)
 
-        return self.redirect(random.choice(photo_ids))
+        return self.redirect(str(random.choice(photo_ids)))
 
 
 class BeginAuth(webapp2.RequestHandler):
