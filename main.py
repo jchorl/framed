@@ -75,7 +75,10 @@ def get_link_from_cookies(cookies):
         encoded = cookies.get('link')
         if not encoded:
             return None
-        decoded = jwt.decode(encoded, secrets.JWT, algorithms=['HS256'])
+        try:
+            decoded = jwt.decode(encoded, secrets.JWT, algorithms=['HS256'])
+        except:
+            return None
         if not decoded or 'link' not in decoded:
             return None
         key = ndb.Key(urlsafe=decoded['link'])
