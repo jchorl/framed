@@ -62,7 +62,7 @@ def get_albums(credentials, user_id):
 
 def get_photo_links_from_album(credentials, album_id):
     # sizing: https://developers.google.com/picasa-web/docs/2.0/reference#Parameters
-    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '640u'))
+    resp, content = google_request(credentials, 'https://picasaweb.google.com/data/feed/api/user/default/albumid/%s?imgmax=%s' % (album_id, '1024u'))
 
     if resp.status != 200:
         raise Exception('Call to Picasa list in album API returned status %d with body %s' % (resp.status, content))
@@ -163,12 +163,7 @@ class RandomPhoto(webapp2.RequestHandler):
             self.response.write('no photos found in album: %s' % album_id)
             return self.response.set_status(404)
 
-        resp, content = get_photo(credentials, random.choice(photo_ids))
-        if resp.status != 200:
-            raise Exception('Call to Google photo API returned status %d with body %s' % (resp.status, content))
-        for header in ['expires', 'content-type', 'etag', 'cache-control']:
-            self.response.headers[header] = resp[header]
-        return self.response.write(content)
+        return self.redirect(random.choice(photo_ids))
 
 
 class BeginAuth(webapp2.RequestHandler):

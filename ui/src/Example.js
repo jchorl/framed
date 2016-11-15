@@ -9,7 +9,9 @@ export default class Example extends Component {
 
   componentDidMount() {
     let link = this.state.link;
-    setTimeout(function(){document.getElementById('framed').src=link+'?'+new Date().getTime()},30000,30000);
+    setInterval(function(){
+      document.getElementById('framed').src = link + '?' + new Date().getTime()
+    }, 15000);
   }
 
   render() {

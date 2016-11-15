@@ -86,7 +86,11 @@ export default class GettingStarted extends Component {
               }
             </div>
             <div className="step">
-              <h3>3. Embed!</h3>
+              <h3>3. Make album public</h3>
+              Log in to Google Photos and generate a shareable link for the album. This will make every photo in the album public.
+            </div>
+            <div className="step">
+              <h3>4. Embed!</h3>
               <div className="snippets">
                 <div className="snippet">
                   HTML:
@@ -95,9 +99,9 @@ export default class GettingStarted extends Component {
                 <div className="snippet">
                   For rotation:
                   <pre><code className="javascript">{
-`setTimeout(function(){
+`setInterval(function(){
    document.getElementById('framed').src = '${this.state.link}?' + new Date().getTime()
-}, 30000, 30000)`
+}, 15000)`
                }</code></pre>
          </div>
          <div className="snippet">
