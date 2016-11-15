@@ -13,8 +13,8 @@ from google.appengine.ext import ndb
 import secrets
 
 GOOGLE_PHOTOS_SCOPES = ['https://picasaweb.google.com/data/', 'https://www.googleapis.com/auth/userinfo.email']
-DOMAIN = 'localhost:3000'
-APP_URL = 'http://' + DOMAIN
+DOMAIN = 'framed.joshchorlton.com'
+APP_URL = 'https://' + DOMAIN
 
 STATE_UNAUTHD = 'UNAUTHD'
 STATE_NO_ALBUM = 'NO_ALBUM'

@@ -1,4 +1,5 @@
 runtime: python27
+version: 1
 api_version: 1
 threadsafe: true
 
@@ -9,10 +10,27 @@ handlers:
 
 - url: /static
   static_dir: ui/build/static
+  secure: always
 
 - url: /api.*
   script: main.app
+  secure: always
+
+- url: /.well-known/acme-challenge
+  static_dir: .well-known/acme-challenge
+  mime_type: text/plain
 
 - url: /.*
   static_files: ui/build/index.html
   upload: ui/build/index.html
+  secure: always
+
+skip_files:
+- ^(.*/)?\.DS_Store$
+- ^ui/node_modules/(.*)$
+- ^ui/config/(.*)$
+- ^ui/public/(.*)$
+- ^ui/scripts/(.*)$
+- ^ui/src/(.*)$
+- ^letsencrypt/(.*)$
+- ^\.git/(.*)
