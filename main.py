@@ -195,10 +195,8 @@ class Reset(webapp2.RequestHandler):
         key = create_link(link.get_credentials())
         encoded = jwt.encode({'link': key.urlsafe()}, secrets.JWT, algorithm='HS256')
         set_link_cookie(self.response, encoded)
-        albums = get_albums(link.get_credentials(), link.user_id)
         resp = {
-            'state': STATE_NO_ALBUM,
-            'albums': albums
+            'state': STATE_NO_ALBUM
         }
         return write_json(self.response, resp)
 

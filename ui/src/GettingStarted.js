@@ -116,7 +116,7 @@ export default class GettingStarted extends Component {
         ? <button onClick={this.reset}>Make another!</button>
         : null }
   </div>
-        ) : null }
+        ) : <div className="loader-container"><div className="loader">Loading...</div></div> }
       </div>
     )
   }
