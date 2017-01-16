@@ -13,7 +13,6 @@ export default class FAQ extends Component {
         Create a file called <code>secrets.py</code> with <code>JWT = {`<YOUR_JWT_SECRET>`}</code> in the root directory.<br/>
         Change the domain at the top of <code>main.py</code>.<br/>
         Create a project on App Engine.<br/>
-        Generate an OAuth2 client secret as described <a href="https://developers.google.com/identity/protocols/OAuth2" target="_blank">here</a> and place the json in the project directory called <code>client_secret.json</code>.<br/>
         Deploy like any other App Engine app.
         <h4>Image sizing?</h4>
         Should be an option soon, depending on server load. See <code>get_photo_links_from_album</code> function in <code>main.py</code>. Then deploy yourself.
