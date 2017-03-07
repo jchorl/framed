@@ -16,7 +16,7 @@ ui:
 		-v $(PWD)/ui:/ui \
 		-w /ui \
 		node \
-		npm run build
+		sh -c "npm install; npm run build"
 
 ui-dev:
 	docker run --rm -it \
@@ -26,6 +26,6 @@ ui-dev:
 		--link framed:framed \
 		-w /ui \
 		node \
-		npm start
+		sh -c "npm install; npm start"
 
 .PHONY: run build ui ui-dev
