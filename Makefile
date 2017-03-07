@@ -8,7 +8,7 @@ run:
 		dev_appserver.py --host=0.0.0.0 --threadsafe_override=false .
 
 build:
-	docker build -f Dockerfile. -t jchorl/framed .
+	docker build -f Dockerfile.d -t jchorl/framed .
 
 ui:
 	docker run --rm -it \

@@ -1,5 +1,4 @@
 runtime: python27
-version: 1
 api_version: 1
 threadsafe: true
 
@@ -26,6 +25,7 @@ handlers:
   secure: always
 
 skip_files:
+- ^.*\.pyc$
 - ^(.*/)?\.DS_Store$
 - ^ui/node_modules/(.*)$
 - ^ui/config/(.*)$
