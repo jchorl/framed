@@ -4,7 +4,7 @@ import './Example.css';
 export default class Example extends Component {
   constructor(props) {
     super(props);
-    this.state = { link: "https://framed.joshchorlton.com/api/photo/ab6ccf" };
+    this.state = { link: "https://framed.joshchorlton.com/api/photo/93b34e" };
   }
 
   componentDidMount() {
